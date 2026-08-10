@@ -1,0 +1,34 @@
+{
+  "episodes": {
+    "id": "string",
+    "title": "string",
+    "theme": "string",
+    "platform": "youtube|twitch|maestro",
+    "status": "planned|live|completed"
+  },
+  "colorways": {
+    "id": "string",
+    "name": "string",
+    "primaryHex": "string",
+    "secondaryHex": "string",
+    "accentHex": "string",
+    "mood": "string",
+    "textureNotes": "string"
+  },
+  "prompts": {
+    "id": "string",
+    "episodeId": "string",
+    "colorwayId": "string",
+    "promptText": "string",
+    "dnaScore": "number",
+    "locked": "boolean"
+  },
+  "renders": {
+    "id": "string",
+    "episodeId": "string",
+    "promptId": "string",
+    "imageUrl": "string",
+    "voteCount": "number",
+    "status": "draft|finalist|archived|featured|xrCandidate"
+  }
+}
