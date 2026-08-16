@@ -1,5 +1,4 @@
--- Render Arena Live by HAI
--- Streaming connectivity control plane.
+-- Render Arena Live by HAI streaming connectivity control plane
 -- Applied to Supabase project ref: vbzkwuvdnnlznvhtqttl
 
 create extension if not exists pgcrypto;
@@ -90,43 +89,30 @@ create table if not exists public.stream_events (
   created_at timestamptz not null default now()
 );
 
-create index if not exists idx_stream_sessions_status on public.stream_sessions(status);
-create index if not exists idx_stream_sessions_scheduled_for on public.stream_sessions(scheduled_for);
-create index if not exists idx_stream_session_routes_session on public.stream_session_routes(stream_session_id);
-create index if not exists idx_stream_events_session_time on public.stream_events(stream_session_id, created_at desc);
-create index if not exists idx_stream_destinations_platform_id on public.stream_destinations(platform_id);
-create index if not exists idx_stream_events_created_by on public.stream_events(created_by);
-create index if not exists idx_stream_session_routes_destination_id on public.stream_session_routes(destination_id);
-create index if not exists idx_stream_sessions_created_by on public.stream_sessions(created_by);
-create index if not exists idx_stream_sessions_primary_destination_id on public.stream_sessions(primary_destination_id);
-
-insert into public.streaming_platforms (platform_id, display_name, platform_role, connection_type, priority, is_primary, public_url, docs_url, notes)
-values
+-- Seeded route metadata. Stream keys are not stored here.
+insert into public.streaming_platforms (platform_id, display_name, platform_role, connection_type, priority, is_primary, public_url, docs_url, notes) values
 ('twitch','Twitch','primary_live','direct_encoder',10,true,'https://www.twitch.tv/','https://help.twitch.tv/','Primary Render Arena live destination.'),
-('youtube','YouTube Live','secondary_live','direct_encoder',20,false,'https://www.youtube.com/','https://support.google.com/youtube/','Secondary live and replay/archive platform.'),
+('youtube','YouTube Live','secondary_live','direct_encoder',20,false,'https://www.youtube.com/','https://support.google.com/youtube/','Secondary live and evergreen platform.'),
 ('maestro','Maestro TV','premium_live','embed_or_rtmp',30,false,'https://www.maestro.io/','https://support.maestro.io/','Premium interactive broadcast layer.'),
 ('restream','Restream','distribution_hub','distribution_hub',40,false,'https://restream.io/','https://support.restream.io/','Optional multistream router.'),
 ('streamlabs','Streamlabs Desktop','local_encoder','local_encoder',1,false,'https://streamlabs.com/','https://support.streamlabs.com/','Local encoding/control surface.')
-on conflict (platform_id) do update set display_name = excluded.display_name, platform_role = excluded.platform_role, connection_type = excluded.connection_type, priority = excluded.priority, is_primary = excluded.is_primary, public_url = excluded.public_url, docs_url = excluded.docs_url, notes = excluded.notes, updated_at = now();
+on conflict (platform_id) do update set updated_at = now();
 
-insert into public.stream_destinations (destination_key, platform_id, display_name, route_purpose, connection_method, rtmp_url_placeholder, stream_key_secret_name, external_dashboard_url, requires_manual_key, notes)
-values
-('streamlabs_local_encoder','streamlabs','Streamlabs Local Encoder','local_encoder','streamlabs_local',null,null,'https://streamlabs.com/dashboard',false,'Controls scenes, cameras, overlays, audio, and outbound destination.'),
-('twitch_primary_direct','twitch','Twitch Primary Direct','primary','direct_rtmp','Use Twitch ingest/server selected in Streamlabs.','TWITCH_STREAM_KEY','https://dashboard.twitch.tv/',true,'Primary no-cost launch path.'),
-('restream_distribution_hub','restream','Restream Distribution Hub','distribution','restream_hub','Use Restream RTMP endpoint.','RESTREAM_STREAM_KEY','https://app.restream.io/',true,'Optional hub for Twitch and YouTube.'),
-('youtube_secondary_live','youtube','YouTube Live Secondary','secondary','youtube_rtmp','Use YouTube Live RTMP/RTMPS server URL.','YOUTUBE_STREAM_KEY','https://studio.youtube.com/',true,'Secondary live destination.'),
-('maestro_premium_live','maestro','Maestro Premium Live Page','premium','maestro_rtmp','Use Maestro Live Channel RTMP destination.','MAESTRO_STREAM_KEY','https://support.maestro.io/',true,'Premium interactive page destination.'),
-('maestro_embed_page','maestro','Maestro Embedded Experience','embed','maestro_embed',null,null,'https://support.maestro.io/',false,'Website embed route for Maestro video/panels.')
-on conflict (destination_key) do update set platform_id = excluded.platform_id, display_name = excluded.display_name, route_purpose = excluded.route_purpose, connection_method = excluded.connection_method, rtmp_url_placeholder = excluded.rtmp_url_placeholder, stream_key_secret_name = excluded.stream_key_secret_name, external_dashboard_url = excluded.external_dashboard_url, requires_manual_key = excluded.requires_manual_key, notes = excluded.notes, updated_at = now();
+insert into public.stream_destinations (destination_key, platform_id, display_name, route_purpose, connection_method, stream_key_secret_name, external_dashboard_url, requires_manual_key, notes) values
+('streamlabs_local_encoder','streamlabs','Streamlabs Local Encoder','local_encoder','streamlabs_local',null,'https://streamlabs.com/dashboard',false,'Local scene/audio/encoder control.'),
+('twitch_primary_direct','twitch','Twitch Primary Direct','primary','direct_rtmp','TWITCH_STREAM_KEY','https://dashboard.twitch.tv/',true,'Primary no-cost launch route.'),
+('restream_distribution_hub','restream','Restream Distribution Hub','distribution','restream_hub','RESTREAM_STREAM_KEY','https://app.restream.io/',true,'Optional multistream hub.'),
+('youtube_secondary_live','youtube','YouTube Live Secondary','secondary','youtube_rtmp','YOUTUBE_STREAM_KEY','https://studio.youtube.com/',true,'Secondary destination.'),
+('maestro_premium_live','maestro','Maestro Premium Live Page','premium','maestro_rtmp','MAESTRO_STREAM_KEY','https://support.maestro.io/',true,'Premium RTMP destination.'),
+('maestro_embed_page','maestro','Maestro Embedded Experience','embed','maestro_embed',null,'https://support.maestro.io/',false,'Website embed route.')
+on conflict (destination_key) do update set updated_at = now();
 
 create or replace view public.active_streaming_destinations with (security_invoker = true) as
-select d.destination_key, d.display_name as destination_name, d.route_purpose, d.connection_method, d.rtmp_url_placeholder, d.stream_key_secret_name, d.requires_manual_key, d.is_enabled as destination_enabled, p.platform_id, p.display_name as platform_name, p.platform_role, p.connection_type, p.priority, p.is_primary, p.is_enabled as platform_enabled, p.public_url, p.docs_url, d.notes
-from public.stream_destinations d join public.streaming_platforms p on p.platform_id = d.platform_id
+select d.destination_key, d.display_name as destination_name, d.route_purpose, d.connection_method, d.rtmp_url_placeholder,
+       d.stream_key_secret_name, d.requires_manual_key, d.is_enabled as destination_enabled,
+       p.platform_id, p.display_name as platform_name, p.platform_role, p.connection_type, p.priority,
+       p.is_primary, p.is_enabled as platform_enabled, p.public_url, p.docs_url, d.notes
+from public.stream_destinations d
+join public.streaming_platforms p on p.platform_id = d.platform_id
 where d.is_enabled = true and p.is_enabled = true
 order by p.priority, d.route_purpose;
-
-alter table public.streaming_platforms enable row level security;
-alter table public.stream_destinations enable row level security;
-alter table public.stream_sessions enable row level security;
-alter table public.stream_session_routes enable row level security;
-alter table public.stream_events enable row level security;

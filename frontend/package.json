@@ -1,8 +1,8 @@
 {
   "name": "render-arena-live-by-hai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Render Arena Live by HAI web prototype scaffold.",
+  "description": "Render Arena Live by HAI web prototype scaffold with Supabase streaming control-plane integration.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

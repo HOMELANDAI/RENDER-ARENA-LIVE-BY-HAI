@@ -1,75 +1,75 @@
 # Supabase Streaming Backend
 
-## Project
-
-- Supabase project name: RENDER ARENA LIVE BY HAI
-- Project ref: `vbzkwuvdnnlznvhtqttl`
-- Project URL: `https://vbzkwuvdnnlznvhtqttl.supabase.co`
+Project: RENDER ARENA LIVE BY HAI
+Project ref: vbzkwuvdnnlznvhtqttl
+URL: https://vbzkwuvdnnlznvhtqttl.supabase.co
 
 ## Applied migrations
 
-- `streaming_connectivity_control_plane`
-- `harden_streaming_control_plane_security`
-- `optimize_streaming_control_plane_indexes_and_policies`
+- streaming_connectivity_control_plane
+- harden_streaming_control_plane_security
+- optimize_streaming_control_plane_indexes_and_policies
 
 ## Tables
 
 ### streaming_platforms
 
-Stores supported platforms: Twitch, YouTube, Maestro, Restream, and Streamlabs.
+Stores platform-level metadata for Twitch, YouTube, Maestro, Restream, and Streamlabs.
 
 ### stream_destinations
 
-Stores destination routes and connection methods. It stores secret names, not stream keys.
+Stores route-specific destination metadata. This table stores dashboard URLs and secret-name references only, not stream keys.
 
 ### stream_sessions
 
-Stores each live episode/test stream and its mode: Twitch direct, Restream multistream, Maestro premium, direct YouTube, or test recording.
+Stores scheduled/live/ended sessions, selected mode, route, Figma page, OBS scene, and notes.
 
 ### stream_session_routes
 
-Connects a stream session to one or more destination routes.
+Connects each session to one or more destinations.
 
 ### stream_events
 
-Logs lifecycle events such as session created, scheduled, live, ended, route failed, render reveal, or host-triggered state changes.
-
-## View
-
-### active_streaming_destinations
-
-Read model for frontend panels that need platform/destination cards.
+Append-only live events for session_created, session_live, session_ended, and UI actions.
 
 ## Edge Function
 
-### stream-session-control
+`stream-session-control`
 
-JWT-protected function for:
+Supported actions:
 
-- fetching active destinations
-- creating stream sessions
-- setting stream status
-- logging stream events
+- GET destinations
+- GET session by id
+- POST create_session
+- POST set_status
+- POST log_event
 
-Endpoint:
+JWT verification is enabled.
 
-```text
-https://vbzkwuvdnnlznvhtqttl.supabase.co/functions/v1/stream-session-control
-```
+## Realtime
+
+The following tables were added to Supabase Realtime publication:
+
+- stream_sessions
+- stream_session_routes
+- stream_events
 
 ## Storage
 
 Bucket:
 
-```text
-render-arena-stream-assets
-```
+- render-arena-stream-assets
 
-Use for stream overlays, lower thirds, thumbnail exports, route screenshots, schedule cards, and platform-specific media cards.
+Purpose:
 
-## Security posture
+- overlay images
+- JSON panel config
+- stream thumbnails
+- replay support assets
 
-- JWT verification is enabled on the Edge Function.
-- RLS is enabled on new public tables.
-- Stream keys are not stored in public rows.
-- Destination records only name expected secret references such as `TWITCH_STREAM_KEY`.
+## Security
+
+- RLS enabled on streaming tables.
+- Public read allowed only for non-secret route metadata.
+- Authenticated users can create/update stream sessions and routes.
+- Stream keys stay in platform dashboards or Supabase secrets, not in public rows.

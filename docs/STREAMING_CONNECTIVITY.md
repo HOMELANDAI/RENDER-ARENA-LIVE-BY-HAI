@@ -1,53 +1,46 @@
 # Streaming Connectivity
 
-Render Arena Live should start simple, then expand.
+Render Arena Live by HAI should launch with the simplest working broadcast path first, then layer in multistream and premium destinations.
 
-## Recommended free-first path
+## Primary path
 
 ```text
 Streamlabs Desktop -> Twitch
 ```
 
-This is the cleanest way to begin logging hours on Twitch without adding unnecessary platform complexity.
+This is the preferred first-path because it minimizes friction while the show format is still being refined.
 
-## Secondary expansion path
+## Secondary path
 
 ```text
 Streamlabs Desktop -> Restream -> Twitch + YouTube
 ```
 
-Use this only after the Twitch-only show flow feels stable.
+This path allows Twitch to remain the primary home while YouTube can receive either live simulcast tests or later edited/replay content.
 
-## YouTube path
+## Premium path
 
-YouTube Live can receive a stream from an encoder using a server URL and stream key. Render Arena should treat YouTube as both a secondary live destination and the main long-form replay/search archive.
+```text
+Streamlabs / Encoder -> Maestro RTMP
+Render Arena website -> Maestro embed / panel module
+```
 
-## Maestro TV path
-
-Maestro should be the premium interactive layer. It can host a live page, accept third-party encoder feeds, or be embedded into a Render Arena website module depending on the final Maestro setup.
+Maestro should be treated as a premium interactive layer for structured voting, gated replays, curated modules, and high-value audience experiences.
 
 ## Supabase role
 
-Supabase handles:
+Supabase controls:
 
-- stream session records
-- active route metadata
-- platform destinations
-- live/scheduled/ended state
-- event logging
-- frontend control state
-- storage of stream overlay assets
+- stream destination metadata
+- session creation
+- selected routing mode
+- live/scheduled/ended status
+- route status events
+- realtime state for UI panels
+- storage for stream assets and overlays
 
-Supabase does not push the live video feed. The encoder and streaming services do that.
+Supabase does not carry live video.
 
-## Initial destination priority
+## Initial operating recommendation
 
-1. Streamlabs local encoder
-2. Twitch primary direct
-3. YouTube secondary
-4. Maestro embed or RTMP
-5. Restream distribution hub
-
-## Operational principle
-
-Launch Twitch-first. Keep Restream, YouTube, and Maestro ready as connection modes, not mandatory dependencies for early streams.
+Start with Streamlabs to Twitch direct, record locally, and cut YouTube content afterward. Add Restream only when the live show rhythm is stable.
