@@ -1,56 +1,45 @@
 # Render Arena Live by HAI
 
-**Render Arena Live by HAI** is a premium live generative AI image creation and immersive storytelling platform by HomelandAI. It is structured for **YouTube, Twitch, Maestro.tv**, and future XR environments.
+Render Arena Live is HomelandAI's live creative production and public viewing experience.
 
-The project combines live prompt-building, HAI colorway systems, RTX-accelerated image generation, audience voting, studio broadcast design, Render Vault archiving, and future Samsung Galaxy XR / NVIDIA XR AI storytelling.
+- **Live site:** https://renderarenahai.com
+- **Current Sites production version:** 31 (source commit `6bdf27d284f6fb01cef11145fff6009653c5389a`, deployed November 22, 2026)
+- **Sites project:** `appgprj_6a989594cec48191a900714f7f169ea7`
 
-## Core thesis
+## Current experience
 
-Most AI content shows finished images. Render Arena shows the full creative process:
+The public site includes the Home, Arena, Prompt, Palette, Vault, Studio, Control, XR, Safari, and HAI sections. Its Home scene uses the RA mark and restrained ambient motion. The HAI Method has ten steps—Idea, Prompt, Colorway, Render, Refine, Vote, Reveal, Curate, Vault, World—with a gold surge that moves forward and then reverses.
 
-```text
-Idea -> Prompt -> Colorway -> Render -> Refine -> Vote -> Reveal -> Archive -> World
-```
+The Arena has a two-bay battle presentation. Each side reserves an artist name, render image, title, and sponsor position, with a centered VS. Unrevealed work is held back from the public view. A separate embedded Twitch or YouTube player is shown when the producer configures and verifies a live broadcast. Sponsor positions are layout placeholders, not a booking or ad-serving system.
 
-The show treats every render as a scene, every scene as a story, and every story as a future world.
+The private production model has a producer and two remote artist bays. The producer signs in, issues artist access codes, names the bays, controls the public reveal together or in sequence, and manages the broadcast configuration. Artists submit from their assigned bays. The control experience also provides local screen, camera, and audio checks; an external encoder such as OBS or Streamlabs handles the actual platform broadcast.
 
-## Primary platforms
+## Repository status and source of truth
 
-- **Twitch:** live audience reaction, chat energy, voting, clips.
-- **Maestro.tv:** premium interactive broadcast, structured modules, gated content, replay libraries.
-- **YouTube:** evergreen episodes, shorts, tutorials, prompt breakdowns, documentaries.
+This repository was created as a concept, planning, and early scaffold archive. **Its existing `frontend/`, `backend/`, and `firebase/` directories are historical scaffolds; they are not the source deployed at renderarenahai.com.** The current runnable application source is maintained in the Sites project above. A source mirror into this GitHub repository is still pending. Do not deploy the historical scaffold and expect it to match production.
 
-## Major systems
-
-- **The Arena Floor:** head-to-head live render interface.
-- **Colorway Prompt Engine:** half gallery, half prompt terminal.
-- **HAI Colorway System:** controlled palette DNA for viewer-guided creativity.
-- **Render Vault:** archive of final images, metadata, prompts, votes, and XR candidates.
-- **RTX Workflow:** NVIDIA RTX 6000 Ada-inspired acceleration concept for fast iteration.
-- **Studio Layout:** two-host opposing desk studio with OLED displays, custom towers, HAI engraving, and three wall screens.
-- **XR Futures:** Samsung Galaxy XR, spatial canvas, virtual gallery, 2D-to-3D expansion, NVIDIA XR AI agents.
-- **Homeland Safari:** immersive time-lapse storytelling world connected to Homeland Hunt mythology.
-
-## Repository structure
+The existing directories remain available for research and production planning:
 
 ```text
-docs/                 Project specs, strategy, architecture, workflow
-branding/             HAI brand language, colorways, typography, visual rules
-ui/                   Interface specs for Arena Floor, Prompt Engine, Render Vault
-prompts/              Production prompts for studio, UI, XR, and Homeland Safari
-frontend/             Website/application scaffold
-backend/              Backend/API scaffold
-firebase/             Firebase/Firestore structure
-worlds/               Narrative worlds such as Homeland Safari
-presentations/        Sponsor and platform pitch materials
-assets/               Placeholder directory for future graphics, exports, overlays
-SUMMARY/              Conversation and development summary
+docs/           Concept, architecture, and workflow notes
+branding/       Brand and colorway references
+ui/             Earlier interface specifications
+prompts/        Creative production briefs
+frontend/       Historical scaffold
+backend/        Historical scaffold
+firebase/       Historical data-model exploration
+worlds/         Storyworld concepts
+presentations/  Pitch material
+PATCHES/        Earlier planning patches
+SUMMARY/        Project history
 ```
 
-## Current status
+## Production sequence
 
-Concept repository and documentation foundation. This repo is intended to help designers, developers, sponsors, platform partners, and production collaborators understand the full Render Arena Live by HAI concept.
+1. The producer prepares the session, destinations, and named Bay 1 and Bay 2 access.
+2. Artists create independently from separate locations and submit their work privately.
+3. The producer chooses a simultaneous or ordered reveal and opens only selected work to the public Arena.
+4. The live program is encoded externally and embedded on the website when a supported source is configured and the show is on air.
+5. Approved work can enter the Vault with producer-selected designations.
 
-## Long-term direction
-
-Render Arena can evolve from a live AI art show into a spatial storytelling studio where viewers help create scenes live, archive them, and eventually step inside them through XR experiences.
+The public site and the GitHub archive should be reviewed together until the application source has been mirrored here. This README records the production position without presenting the older scaffold as current code.
